@@ -27,7 +27,7 @@ const App: React.FC = () => (
           style={{ width: '100%', height: '1040px', border: 'none', borderRadius: '8px', display: 'block' }}
           loading="eager"
         />
-        <p style={{ textAlign: 'center', color: '#64748b', fontSize: '12px', margin: '8px 10px 14px' }}>You may also <a href="https://g.page/r/CVumqZ4s3ItIEBM/review" target="_blank" rel="noopener noreferrer">share an honest Google review</a>. This is optional and separate from this form.</p>
+      
       </div>
     </section>
   </main>
