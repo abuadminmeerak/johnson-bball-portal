@@ -10,18 +10,14 @@ const [name, setName] = useState('');
 const [email, setEmail] = useState('');
 const [feedback, setFeedback] = useState(''); 
   const handleRating = (val: number) => {
-  setRating(val);
-  setSubmitError('');
-
-  if (val >= 4) {
-    setView('SUCCESS');
-  } else {
-    setView('PRIVATE');
-  }
-};
+    setRating(val);
+    setSubmitError('');
+    // Keep the parent on the form until they submit their details.
+  };
 
   const submitMediation = async () => {
     if (sending) return;
+    if (!rating) { setSubmitError('Please select a star rating.'); return; }
     if (!name.trim() || !email.trim() || !feedback.trim()) {
       setSubmitError('Please complete all fields so our coach can follow up.');
       return;
@@ -30,8 +26,9 @@ const [feedback, setFeedback] = useState('');
       setSubmitError('Please enter a valid email address.');
       return;
     }
+    // No endpoint configured: demo only. No data is transmitted.
     if (!submissionUrl) {
-      setSubmitError('Private submissions are temporarily unavailable. Please contact Johnson Basketball Training directly.');
+      setView('DEMO_THANKS');
       return;
     }
     setSending(true);
@@ -43,7 +40,7 @@ const [feedback, setFeedback] = useState('');
         body: JSON.stringify({ name: name.trim(), email: email.trim(), rating, feedback: feedback.trim(), source: 'Johnson Basketball Parent Portal' }),
       });
       if (!response.ok) throw new Error('Submission failed');
-      setView('THANKS');
+      setView(rating >= 4 ? 'SUCCESS' : 'THANKS');
     } catch {
       setSubmitError('We could not submit your concern. Please try again or contact Johnson Basketball Training directly.');
     } finally {
@@ -89,7 +86,10 @@ const [feedback, setFeedback] = useState('');
   value={feedback} 
   onChange={(e) => setFeedback(e.target.value)} 
   style={{ width: '100%', marginTop: '10px', height: '80px', padding: '10px', borderRadius: '5px', border: '1px solid #ddd' }} 
-/></>
+/>
+{submitError && <p role="alert" style={{ color: '#b91c1c', fontSize: '13px' }}>{submitError}</p>}
+<button type="button" onClick={submitMediation} disabled={sending} style={{width:'100%', marginTop:'14px', backgroundColor:'#1b4ba3', color:'white', padding:'14px', border:0, borderRadius:'10px', cursor:'pointer', fontWeight:'bold'}}>{sending ? 'Submitting…' : 'Submit Feedback'}</button>
+</>
           )}
 
           {view === 'SUCCESS' && (
@@ -193,6 +193,14 @@ const [feedback, setFeedback] = useState('');
   </div>
 )}
 
+
+          {view === 'DEMO_THANKS' && (
+            <div style={{textAlign:'center'}}>
+              <h3>Demo Complete</h3>
+              <p>Your rating and details passed the form validation. This is a preview only: no feedback was sent to Johnson Basketball.</p>
+              <button onClick={() => {setView('RATING'); setRating(0); setName(''); setEmail(''); setFeedback('');}} style={{padding:'12px', cursor:'pointer'}}>Test Again</button>
+            </div>
+          )}
 
           {view === 'THANKS' && (
             <div style={{ textAlign: 'center' }}>
